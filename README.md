@@ -1,61 +1,85 @@
-# Server Scanner and Exploit
+# Controlled Worm Exploitation Project
 
-This program is designed to scan a range of IP addresses for servers listening on port 8080 and exploit a vulnerability on those servers.
+This project is designed as an end-of-study exploration into controlled worm exploitation. It includes intentional vulnerabilities for educational purposes.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Features](#features)
+- [Code Components](#code-components)
+    - [Server Vulnerability](#server-vulnerability)
+    - [Exploitation Code](#exploitation-code)
+- [Motivation](#motivation)
 - [Usage](#usage)
-- [Structure](#structure)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Introduction
 
-This C program uses socket programming to scan a specified range of IP addresses for servers listening on port 8080. It creates a linked list of available servers and attempts to exploit a vulnerability on those servers by establishing a connection and executing an exploit code.
+This project explores controlled worm exploitation using intentional vulnerabilities implemented in specific pieces of code. It includes a server vulnerability designed to exhibit a buffer overflow and an exploitative code component that leverages this vulnerability.
 
-## Features
+## Code Components
 
-- **Server Scanner**: Scans IP addresses within a specified range to detect servers listening on port 8080.
-- **Exploit Functionality**: Attempts to exploit a vulnerability on detected servers.
-- **Linked List Implementation**: Utilizes a linked list data structure to store available servers.
+### Server Vulnerability
 
-## Usage
+The server code (`server.c`) in this project intentionally contains a vulnerable function `overflow()` that demonstrates a buffer overflow:
 
-To use this program:
+```c
+#include "server.h"
 
-1. Compile the code using a C compiler (e.g., gcc).
-2. Execute the compiled binary, which will scan the specified IP range and attempt to exploit vulnerable servers.
-3. Review the console output for a list of servers found and exploited.
+void overflow(char *str, int n) {
+    char buffer[5];
+    printf("get: %d\n", n);
 
-**Note**: Ensure compliance with legal and ethical standards when scanning and exploiting servers. Unauthorized access to systems is illegal and unethical.
+    if (n <= 5) {
+        strcpy(buffer, str); // Intentional buffer overflow
+    } else {
+        printf("Input size too large\n");
+    }
 
-## Structure
+    printf("Received: %s\n", buffer);
+}
+```
 
-- `struct cell_server`: Represents an individual server cell in the linked list.
-- `struct list_server`: Defines the server list structure.
-- `Init_List()`: Initializes the list structure.
-- `Add_Beginning()`: Adds a server to the beginning of the list.
-- `print_list()`: Prints the contents of the server list.
-- `free_list()`: Frees memory occupied by the server list.
-- `is_infected()`: Checks if a server is infected.
-- `infect()`: Functionality for infecting servers (exploit code not detailed).
-- `scan_server_available()`: Scans for available servers in a given IP range.
-- `exploit()`: Executes an exploit on a vulnerable server.
-- `entry_point()`: Main function where scanning and exploiting occur.
-- `main()`: Program entry point.
+This function is deliberately vulnerable and susceptible to buffer overflow for educational purposes.
+### Exploitation Code
 
-## Contributing
+The main project (`main.c`) contains an exploit code designed to utilize the intentional vulnerability in the server:
 
-Contributions to this project are welcome! To contribute:
+```c
+#include "server.h"
 
-1. Fork the repository.
-2. Create a new branch.
-3. Make your enhancements or fixes.
-4. Create a pull request.
+// ... (other code sections)
 
-## License
+void chat_client(int client_socket) {
+    char buff[MAX_BUFFER_SIZE];
 
-This project is licensed under the [Insert License Here] License - see the [LICENSE](LICENSE) file for details.
+    for (;;) {
+        bzero(buff, MAX_BUFFER_SIZE);
+        int n = read(client_socket, buff, sizeof(buff));
+
+        if (n <= 0) {
+            break;
+        }
+
+        printf("From client: %s\n", buff);
+        overflow(buff, n); // Exploiting the buffer overflow vulnerability
+        write(client_socket, buff, strlen(buff) + 1);
+
+        if (strncmp("exit", buff, 4) == 0) {
+            printf("Server Exit...\n");
+            break;
+        }
+    }
+}
+
+// ... (other code sections)
+```
+This code segment demonstrates how the buffer overflow vulnerability in the server is exploited in the context of the project.
+
+## Motivation
+
+The inclusion of intentionally vulnerable code components serves an educational purpose within this project. These vulnerabilities are created and utilized under controlled conditions to provide insight into the risks associated with buffer overflow vulnerabilities and their potential exploitation by malicious entities. Please note that this project has been lead within a controlled environment and is **not designed to be a threat of any kind**, especially in regard of the current process memory security standards (ASLR, stack canaries..). The initial intent was to discover and aprehend the difficulties and challenges that represented crafting a self-replicating program through a LAN. The goal was to set foot into the offensive security world for 3 curious security students, with a topic that intrigued us. Be warned, this code is far from perfect !  
+
+
+
 
