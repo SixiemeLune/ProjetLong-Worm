@@ -1,30 +1,61 @@
-# ProjetLong-Worm
-TLS SEC 2023 Projet long 
- 
-- Developpement d'un serveur vulnerable
-  fork sur nouvelle connexion
-  Serveur hello : attend un message -> retour ce message
-  Vulnerabilite : buffer overflow
+# Server Scanner and Exploit
 
-- Partie scan / recherche de cible
-  Entree : plage d'adresses IP (deux entiers)
-  Sortie : liste d'adresses IP potentiellement vulnerables
-  A definir : strategie de scan de la plage
-  (Au depart : 10.0.0.1 - 10.0.0.255)
-  (Replicat : 10.1.0.1 - 10.1.0.255)
-- Partie replication
-  Message envoye : [code du vers/recopie - data - padding - adresse de Message en memoire]
-  Piste : script de linkage (*.ld) : recuperer adresse en memoire du debut du code et l'adresse en memoire de fin du code
-  Piste : data doit etre la plage choisie "aleatoirement" que la nouvelle instance doit traiter
+This program is designed to scan a range of IP addresses for servers listening on port 8080 and exploit a vulnerability on those servers.
 
-- Bootstrap
-  Code avec un "main" qui se connecte a un serveur pour copier le vers (la premiere fois)
+## Table of Contents
 
-- Points d'attention
-  Eviter d'utiliser les fonctions standard
-  Socket
+- [Introduction](#introduction)
+- [Features](#features)
+- [Usage](#usage)
+- [Structure](#structure)
+- [Contributing](#contributing)
+- [License](#license)
 
-* Etape 1 : developpement du serveur (fork + socket) : regarder sur internet
-* Etape 2 : developpement d'un programme malveillant qui scanne une plage, identifie des machines vulnerables, boucle sur la liste de ces machines et exploite la vulnerabilite -> charge malveillante afficher la date
-* Etape 3 : modification du programme malveillant pour qu'il s'affiche a l'ecran malveillant - sans exploiter la vulnerabilite - en hexa
-* Etape 4 : construction de la charge maleillante en fonction du code malveillant lui-meme (recopie)
+## Introduction
+
+This C program uses socket programming to scan a specified range of IP addresses for servers listening on port 8080. It creates a linked list of available servers and attempts to exploit a vulnerability on those servers by establishing a connection and executing an exploit code.
+
+## Features
+
+- **Server Scanner**: Scans IP addresses within a specified range to detect servers listening on port 8080.
+- **Exploit Functionality**: Attempts to exploit a vulnerability on detected servers.
+- **Linked List Implementation**: Utilizes a linked list data structure to store available servers.
+
+## Usage
+
+To use this program:
+
+1. Compile the code using a C compiler (e.g., gcc).
+2. Execute the compiled binary, which will scan the specified IP range and attempt to exploit vulnerable servers.
+3. Review the console output for a list of servers found and exploited.
+
+**Note**: Ensure compliance with legal and ethical standards when scanning and exploiting servers. Unauthorized access to systems is illegal and unethical.
+
+## Structure
+
+- `struct cell_server`: Represents an individual server cell in the linked list.
+- `struct list_server`: Defines the server list structure.
+- `Init_List()`: Initializes the list structure.
+- `Add_Beginning()`: Adds a server to the beginning of the list.
+- `print_list()`: Prints the contents of the server list.
+- `free_list()`: Frees memory occupied by the server list.
+- `is_infected()`: Checks if a server is infected.
+- `infect()`: Functionality for infecting servers (exploit code not detailed).
+- `scan_server_available()`: Scans for available servers in a given IP range.
+- `exploit()`: Executes an exploit on a vulnerable server.
+- `entry_point()`: Main function where scanning and exploiting occur.
+- `main()`: Program entry point.
+
+## Contributing
+
+Contributions to this project are welcome! To contribute:
+
+1. Fork the repository.
+2. Create a new branch.
+3. Make your enhancements or fixes.
+4. Create a pull request.
+
+## License
+
+This project is licensed under the [Insert License Here] License - see the [LICENSE](LICENSE) file for details.
+
