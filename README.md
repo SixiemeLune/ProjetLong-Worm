@@ -46,16 +46,3 @@ To use this program:
 - `entry_point()`: Main function where scanning and exploiting occur.
 - `main()`: Program entry point.
 
-## Contributing
-
-Contributions to this project are welcome! To contribute:
-
-1. Fork the repository.
-2. Create a new branch.
-3. Make your enhancements or fixes.
-4. Create a pull request.
-
-## License
-
-This project is licensed under the [Insert License Here] License - see the [LICENSE](LICENSE) file for details.
-
