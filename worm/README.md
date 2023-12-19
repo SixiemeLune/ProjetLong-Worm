@@ -8,8 +8,7 @@ This program is designed to scan a range of IP addresses for servers listening o
 - [Features](#features)
 - [Usage](#usage)
 - [Structure](#structure)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Introduction
 
