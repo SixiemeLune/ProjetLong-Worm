@@ -1,6 +1,6 @@
 # Server Scanner and Exploit
 
-This program is designed to scan a range of IP addresses for servers listening on port 8080 and exploit a vulnerability on those servers.
+This program is designed to scan a range of IP addresses for servers listening on port 8080 (arbitrary) and exploit a vulnerability on those servers.
 
 ## Table of Contents
 
