@@ -1,4 +1,4 @@
-# Controlled Worm Exploitation Project "Projet Long Worm"
+# Projet Long Worm
 
 This project is designed as an end-of-study exploration into controlled worm exploitation. It includes intentional vulnerabilities for educational purposes.
 
