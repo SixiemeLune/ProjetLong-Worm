@@ -9,9 +9,6 @@ This project is designed as an end-of-study exploration into controlled worm exp
     - [Server Vulnerability](#server-vulnerability)
     - [Exploitation Code](#exploitation-code)
 - [Motivation](#motivation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction
 
