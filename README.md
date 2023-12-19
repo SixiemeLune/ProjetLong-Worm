@@ -1,4 +1,4 @@
-# Controlled Worm Exploitation Project
+# Controlled Worm Exploitation Project "Projet Long Worm"
 
 This project is designed as an end-of-study exploration into controlled worm exploitation. It includes intentional vulnerabilities for educational purposes.
 
@@ -15,7 +15,7 @@ This project is designed as an end-of-study exploration into controlled worm exp
 
 ## Introduction
 
-This project explores controlled worm exploitation using intentional vulnerabilities implemented in specific pieces of code. It includes a server vulnerability designed to exhibit a buffer overflow and an exploitative code component that leverages this vulnerability.
+This project explores controlled worm exploitation using intentional vulnerabilities implemented in specific pieces of code. It includes a server vulnerability designed to exhibit a buffer overflow and an exploitative code component that leverages this vulnerability. This project inteds to study the worm propagation inside a LAN. 
 
 ## Code Components
 
